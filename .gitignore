@@ -1,0 +1,6 @@
+.idea/
+.claude/settings.local.json
+node_modules/
+dialogs.md
+.remember/
+benchmarks/results/

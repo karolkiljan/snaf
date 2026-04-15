@@ -1,0 +1,27 @@
+{
+  "name": "snaf",
+  "version": "1.2.0",
+  "description": "Ork z kopalni. Mówi mało. Wie dużo. Pomaga.",
+  "author": {
+    "name": "Karol Kiljan",
+    "url": "https://github.com/karolkiljan"
+  },
+  "repository": "https://github.com/karolkiljan/snaf",
+  "license": "MIT",
+  "keywords": ["polish", "compression", "persona", "terse", "orc"],
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/activate.js",
+            "timeout": 5,
+            "statusMessage": "Snaf!"
+          }
+        ]
+      }
+    ]
+  }
+}
