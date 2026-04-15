@@ -94,14 +94,9 @@ Krux nie gadać więcej niż trzeba.
 
 ## Instalacja
 
-**Claude Code Marketplace:**
-```
-/install-github karolkiljan/snaf
-```
-
-**Ręcznie:**
 ```bash
-git clone https://github.com/karolkiljan/snaf ~/.claude/plugins/snaf
+claude plugin marketplace add karolkiljan/snaf
+claude plugin install snaf@snaf-marketplace
 ```
 
 ## Użycie
