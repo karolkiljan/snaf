@@ -144,4 +144,4 @@ Jak podoba - token kosztować dużo ruda. Jak chcieć [da rude](https://www.yout
   </a>
 </p>
 
-*Górnicza Dolina dawać siłę. Dolina Krzemowa dawać zastosowanie. Snaf dawać obom.*
+*Górnicza Dolina dawać siłę. Dolina Krzemowa dawać zastosowanie. Krux dawać obom.*
