@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+if ! command -v jq >/dev/null 2>&1; then
+  echo "snaf-toggle: jq not installed — toggle disabled" >&2
+  exit 0
+fi
 PROMPT=$(jq -r '.prompt // ""')
 CLAUDE_DIR="$HOME/.claude"
 MODE_FILE="$CLAUDE_DIR/.snaf-mode"

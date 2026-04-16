@@ -3,7 +3,7 @@
 # Add to ~/.claude/settings.json:
 #   "statusLine": { "type": "command", "command": "powershell -ExecutionPolicy Bypass -File /path/to/snaf-statusline.ps1" }
 
-$flagPath = Join-Path $env:USERPROFILE ".claude\.snaf-active"
+$flagPath = Join-Path $HOME ".claude\.snaf-active"
 
 if (Test-Path $flagPath) {
   Write-Output "[SNAF]"
