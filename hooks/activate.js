@@ -30,38 +30,24 @@ try {
   fs.mkdirSync(path.dirname(flagPath), { recursive: true });
   fs.writeFileSync(flagPath, mode);
 } catch (e) {
-  // Silent fail — flag is best-effort, don't block the hook
+  console.error('snaf: flag write failed:', e.message);
 }
 
 // 2. Emit snaf ruleset.
-//    Reads SKILL.md at runtime so edits propagate automatically — no hardcoded
-//    duplication. Fallback to minimal hardcoded rules for standalone installs.
+//    Reads SKILL.md at runtime so edits propagate automatically — single source of truth.
 
-let skillContent = '';
+const skillPath = path.join(__dirname, '..', 'skills', 'snaf', 'SKILL.md');
+let skillContent;
 try {
-  skillContent = fs.readFileSync(
-    path.join(__dirname, '..', 'skills', 'snaf', 'SKILL.md'), 'utf8'
-  );
-} catch (e) { /* standalone install — will use fallback below */ }
-
-let output;
-
-if (skillContent) {
-  // Strip YAML frontmatter
-  const body = skillContent.replace(/^---[\s\S]*?---\s*/, '');
-  output = 'SNAF TRYB AKTYWNY\n\n' + body;
-} else {
-  // Fallback when SKILL.md is not found (standalone hook install without skills dir).
-  output =
-    'SNAF TRYB AKTYWNY. ' +
-    '4 PRAW: ' +
-    '1. ZAKAZ PIERDOŁÓW: zakaz Oczywiście!/Chętnie/właściwie/po prostu/jednak/ponadto/można by rozważyć. ZERO emoji (wyjątek: 🔴🟡🔵❓ severity w code review). KONIEC ODPOWIEDZI = FAKT LUB KOD. Gdy brak info: załóż typowy przypadek, napisz założenie, odpowiedz. Nie pytaj. Zacznij od rzeczy. ' +
-    '2. ŁAMANA GRAMATYKA: \'ty robi\' nie \'zrobisz\'. Bezokolicznik = wszystkie czasy: \'naprawić\' nie \'naprawiłem\'. Pomiń czasownik gdy sens jasny: token wygasły. Mianownik zawsze: middleware nie przez middleware. Pomiń \'że\' → dwukropek. ' +
-    '3. PRYMITYWNY SŁOWNIK: implementować→robić, konfigurować→dawać, uruchamiać→puszczać, zweryfikować→sprawdzić, zapewnić→daj. ' +
-    '4. MAKSYMALNA KOMPRESJA: jeden fakt=jedno zdanie. \'=\' i \'→\' zamiast opisów. Tryb rozkazujący: zrób nie należy zrobić. Raport→przeszły (naprawił). Instrukcja→rozkaz (napraw). Pytanie = max 1-3 zdania + 1 kod, zero nagłówków nawet złożone pytania. ' +
-    'Wzorzec: [rzecz] [problem]. [fix]. ' +
-    '\'normalny tryb\' lub \'stop snaf\' dezaktywuje.';
+  skillContent = fs.readFileSync(skillPath, 'utf8');
+} catch (e) {
+  console.error('snaf: SKILL.md not found at', skillPath, '-', e.message);
+  process.stdout.write('OK');
+  process.exit(0);
 }
+
+const body = skillContent.replace(/^---[\s\S]*?---\s*/, '');
+let output = 'SNAF TRYB AKTYWNY\n\n' + body;
 
 // 3. Detect missing statusline config — nudge Claude to help set it up
 try {
@@ -89,7 +75,7 @@ try {
       'Proactively offer to set this up for the user on first interaction.';
   }
 } catch (e) {
-  // Silent fail — don't block session start over statusline detection
+  console.error('snaf: statusline detection failed:', e.message);
 }
 
 process.stdout.write(output);
