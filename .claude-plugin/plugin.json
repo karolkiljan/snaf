@@ -10,7 +10,7 @@
   "license": "MIT",
   "keywords": ["polish", "compression", "persona", "terse", "orc"],
   "env": {
-    "SNAF_CONTEXT_THRESHOLD": "30000"
+    "SNAF_CONTEXT_THRESHOLD": "67000"
   },
   "hooks": {
     "UserPromptSubmit": [
