@@ -13,7 +13,7 @@ if (fs.existsSync(projectSettings)) {
   try {
     const data = JSON.parse(fs.readFileSync(projectSettings, 'utf8'));
     const plugins = data.enabledPlugins || {};
-    if (Object.keys(plugins).some(key => key.includes('snaf'))) {
+    if (Object.entries(plugins).some(([key, enabled]) => key.includes('snaf') && enabled === true)) {
       process.stdout.write(projectSettings);
       process.exit(0);
     }

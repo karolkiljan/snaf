@@ -23,8 +23,8 @@ process.stdin.on('end', () => {
   const modeFile = path.join(claudeDir, '.snaf-mode');
   const flag = path.join(claudeDir, '.snaf-active');
 
-  const offRe = /^(stop snaf|normalny tryb|wyłącz snaf)$/i;
-  const onRe = /^(snaf|włącz snaf|start snaf|aktywuj snaf)$/i;
+  const offRe = /^(stop snaf|normalny tryb|wyłącz snaf)$/iu;
+  const onRe = /^(snaf|włącz snaf|start snaf|aktywuj snaf)$/iu;
 
   if (offRe.test(prompt)) {
     fs.writeFileSync(modeFile, 'off');
