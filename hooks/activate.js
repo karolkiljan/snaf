@@ -1,12 +1,4 @@
 #!/usr/bin/env node
-// snaf — SessionStart activation hook
-//
-// Runs on every session start:
-//   1. Writes flag file at ~/.claude/.snaf-active (statusline reads this)
-//   2. Emits snaf ruleset as SessionStart context — reads SKILL.md at runtime
-//      so edits to the source of truth propagate automatically, no duplication.
-//   3. Detects missing statusline config and emits setup nudge
-
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
@@ -19,23 +11,18 @@ const statuslineAskedPath = path.join(claudeDir, '.snaf-statusline-asked');
 
 const mode = getDefaultMode();
 
-// "off" mode — skip activation entirely, don't write flag or emit rules
 if (mode === 'off') {
   try { fs.unlinkSync(flagPath); } catch (e) {}
   process.stdout.write('OK');
   process.exit(0);
 }
 
-// 1. Write flag file
 try {
   fs.mkdirSync(path.dirname(flagPath), { recursive: true });
   fs.writeFileSync(flagPath, mode);
 } catch (e) {
   console.error('snaf: flag write failed:', e.message);
 }
-
-// 2. Emit snaf ruleset.
-//    Reads SKILL.md at runtime so edits propagate automatically — single source of truth.
 
 const skillPath = path.join(__dirname, '..', 'skills', 'snaf', 'SKILL.md');
 let skillContent;
@@ -50,36 +37,47 @@ try {
 const body = skillContent.replace(/^---[\s\S]*?---\s*/, '');
 let output = 'SNAF TRYB AKTYWNY\n\n' + body;
 
-// 3. Detect missing statusline config — nudge Claude to help set it up
+// Statusline: copy script to stable path on every activation so updates propagate.
+// settings.json always points to ~/.claude/.snaf-statusline.{sh,ps1} — never versioned cache path.
 try {
-  let hasStatusline = false;
-  if (fs.existsSync(settingsPath)) {
-    const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
-    if (settings.statusLine) {
-      hasStatusline = true;
-    }
+  const isWindows = process.platform === 'win32';
+  const scriptName = isWindows ? 'snaf-statusline.ps1' : 'snaf-statusline.sh';
+  const stableName = isWindows ? '.snaf-statusline.ps1' : '.snaf-statusline.sh';
+  const srcScript = path.join(__dirname, scriptName);
+  const stableScript = path.join(claudeDir, stableName);
+  const stableCommand = isWindows
+    ? `powershell -ExecutionPolicy Bypass -File "${stableScript}"`
+    : `bash "${stableScript}"`;
+
+  fs.copyFileSync(srcScript, stableScript);
+  if (!isWindows) {
+    try { fs.chmodSync(stableScript, 0o755); } catch (e) {}
   }
 
-  if (!hasStatusline && !fs.existsSync(statuslineAskedPath)) {
-    try { fs.writeFileSync(statuslineAskedPath, '1'); } catch (e) {}
-    const isWindows = process.platform === 'win32';
-    const scriptName = isWindows ? 'snaf-statusline.ps1' : 'snaf-statusline.sh';
-    const scriptPath = path.join(__dirname, scriptName);
-    const command = isWindows
-      ? `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`
-      : `bash "${scriptPath}"`;
-    const statusLineSnippet =
-      '"statusLine": { "type": "command", "command": ' + JSON.stringify(command) + ' }';
-    output += '\n\nSTATUSLINE SETUP NEEDED: The snaf plugin includes a statusline badge showing [SNAF] when active. ' +
-      'It is not configured yet. ' +
-      'To enable, add this to ~/.claude/settings.json: ' +
-      statusLineSnippet + ' ' +
-      'Proactively offer to set this up for the user on first interaction.';
-  } else if (!hasStatusline) {
-    // already asked, skip nudge
+  let settings = {};
+  if (fs.existsSync(settingsPath)) {
+    try { settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8')); } catch (e) {}
+  }
+
+  const currentCommand = settings.statusLine?.command || '';
+  const isSnafStatusline = currentCommand.includes('snaf-statusline');
+
+  if (isSnafStatusline && currentCommand !== stableCommand) {
+    settings.statusLine.command = stableCommand;
+    fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n');
+  } else if (!settings.statusLine) {
+    if (!fs.existsSync(statuslineAskedPath)) {
+      try { fs.writeFileSync(statuslineAskedPath, '1'); } catch (e) {}
+      const snippet = '"statusLine": { "type": "command", "command": ' + JSON.stringify(stableCommand) + ' }';
+      output += '\n\nSTATUSLINE SETUP NEEDED: The snaf plugin includes a statusline badge showing [SNAF] when active. ' +
+        'It is not configured yet. ' +
+        'To enable, add this to ~/.claude/settings.json: ' +
+        snippet + ' ' +
+        'Proactively offer to set this up for the user on first interaction.';
+    }
   }
 } catch (e) {
-  console.error('snaf: statusline detection failed:', e.message);
+  console.error('snaf: statusline setup failed:', e.message);
 }
 
 process.stdout.write(output);
