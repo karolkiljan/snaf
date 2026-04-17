@@ -2,14 +2,23 @@ import json
 import sys
 import os
 import time
+import platform
 
 data = json.load(sys.stdin)
 session_id = data.get("session_id", "")
+if not session_id:
+    sys.stderr.write("snaf context_watch: session_id missing from payload\n")
+    sys.exit(0)
+
 threshold = int(os.environ.get("SNAF_CONTEXT_THRESHOLD", "30000"))
 cooldown = int(os.environ.get("SNAF_CONTEXT_COOLDOWN", "300"))
 
 cwd = os.getcwd()
-project_key = cwd.replace("/", "-")
+if platform.system() == "Windows":
+    project_key = cwd.replace("\\", "-").replace(":", "")
+else:
+    project_key = cwd.replace("/", "-")
+
 project_dir = os.path.expanduser("~/.claude/projects/" + project_key)
 jsonl = os.path.join(project_dir, session_id + ".jsonl")
 
@@ -29,8 +38,10 @@ with open(jsonl) as f:
         try:
             d = json.loads(line)
             usage = d.get("message", {}).get("usage") or d.get("usage")
-            if usage and "cache_read_input_tokens" in usage:
-                last_tokens = usage["cache_read_input_tokens"]
+            if usage:
+                tokens = usage.get("cache_read_input_tokens") or usage.get("input_tokens", 0)
+                if tokens:
+                    last_tokens = tokens
         except Exception:
             pass
 

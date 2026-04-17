@@ -20,6 +20,7 @@
           {
             "type": "command",
             "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/snaf-toggle.sh",
+            "timeout": 5,
             "suppressOutput": true
           }
         ]
