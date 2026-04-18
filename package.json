@@ -1,8 +1,11 @@
 {
   "name": "snaf",
-  "version": "1.7.0",
+  "version": "1.8.1",
   "description": "Ork z kopalni. Mówi mało. Wie dużo. Pomaga.",
   "keywords": ["claude-code-plugin"],
+  "scripts": {
+    "test": "node --test 'test/*.test.js'"
+  },
   "author": "Karol Kiljan",
   "license": "MIT",
   "repository": {
