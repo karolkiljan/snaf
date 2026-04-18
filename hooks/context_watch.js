@@ -25,6 +25,9 @@ process.stdin.on('end', () => {
     if (mode === 'off') process.exit(0);
   } catch (e) {}
 
+  // Dedicated opt-out for context watch alone (keeps snaf persona on).
+  if ((process.env.SNAF_CONTEXT_WATCH || '').toLowerCase() === 'off') process.exit(0);
+
   const sessionId = data.session_id || '';
   const transcriptPath = data.transcript_path || '';
   if (!sessionId || !transcriptPath || !fs.existsSync(transcriptPath)) {

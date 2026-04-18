@@ -91,6 +91,7 @@ Krux nie gadać więcej niż trzeba.
 | `/snaf-review` | Code review - `L42: 🔴 bug: opis. fix.` |
 | `/snaf-compress <plik>` | Przepisz markdown w stylu snaf, ~40% mniej tokenów |
 | `/snaf-context-threshold <N>` | Ustaw próg tokenów dla context watch (domyślnie 85000) |
+| `/snaf-flow [on\|off\|cel]` | Tryb iteracyjny — jeden ruch na raz, bez upfront planu. Włącz też przez `flow`, wyłącz `stop flow` |
 | `/snaf-help` | Karta referencyjna - wszystkie prawa i słownik |
 
 ## Wymagania
@@ -108,11 +109,21 @@ claude plugin install snaf@snaf-marketplace
 
 Aktywuje się sam przy starcie sesji. Plugin sam proponuje konfigurację statusline `[SNAF]` przy pierwszym uruchomieniu.
 
-| Komenda | Efekt |
-|---------|-------|
-| `stop snaf` | Wyłącz - persystuje między sesjami |
-| `normalny tryb` | Wyłącz - persystuje między sesjami |
-| `snaf` | Włącz ponownie |
+**Trwałe przełączanie** (persystuje między sesjami — zapisuje stan do `~/.claude/.snaf-mode`):
+
+| Fraza | Efekt |
+|-------|-------|
+| `snaf` / `włącz snaf` / `start snaf` / `aktywuj snaf` | Włącz |
+| `stop snaf` / `wyłącz snaf` / `normalny tryb` | Wyłącz |
+
+**Ważne:** fraza musi być **całą wiadomością** — bez dodatkowego tekstu. `snaf` działa, `hej snaf włącz się` nie. Polskie znaki opcjonalne (regex ogarnie obie wersje).
+
+**Slash command `/snaf:snaf`** — jednorazowy. Wciąga skill do bieżącej sesji, ale **nie zmienia** `.snaf-mode`. Następna sesja wróci do zapisanego stanu.
+
+**Sprawdzenie stanu:**
+```bash
+cat ~/.claude/.snaf-mode   # on albo off
+```
 
 Wyłączenie trwa aż do ręcznego włączenia - niezależnie od sesji.
 
@@ -123,6 +134,7 @@ Wyłączenie trwa aż do ręcznego włączenia - niezależnie od sesji.
 export SNAF_DEFAULT_MODE=off            # wyłącz domyślnie
 export SNAF_CONTEXT_THRESHOLD=85000     # próg ostrzeżenia context watch (tokeny)
 export SNAF_CONTEXT_COOLDOWN=300        # minimalny odstęp między ostrzeżeniami (sekundy)
+export SNAF_CONTEXT_WATCH=off           # wyłącz context watch (persona snaf zostaje)
 ```
 
 **Plik stanu** (`~/.claude/.snaf-mode`) - automatycznie zarządzany przez hook:

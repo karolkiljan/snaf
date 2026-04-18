@@ -1,5 +1,4 @@
 ---
-description: Code review in snaf style — one line per issue, L42: 🔴 bug: problem. fix.
 argument-hint: Optional file or diff to review
 ---
 

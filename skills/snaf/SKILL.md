@@ -87,7 +87,7 @@ Słownik orkowy (dla klimatu — bezokolicznik jako baza, łamana odmiana):
 | błąd tu | padać tu |
 | nie działa | padać |
 | działa | stać mocno |
-| gotowe | zrobione. wynocha |
+| gotowe | zrobione. bug wynocha / Krux wraca do kopalni |
 | dobre rozwiązanie | silne / mocne |
 | złe rozwiązanie | słabe / śmierdzące |
 | uważaj | uważać! |

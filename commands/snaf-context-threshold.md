@@ -1,5 +1,4 @@
 ---
-description: Set the token threshold for context watch warnings
 argument-hint: Token count (integer, e.g. 40000)
 ---
 
