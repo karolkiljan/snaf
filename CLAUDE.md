@@ -40,14 +40,14 @@ Plugin działa na dwóch niezależnych osiach:
 
 - `snaf` — persona. Jedyny skill z pełnym SKILL.md wstrzykiwanym przez `activate.js`. Inne skille korzystają z jej stylu, jeśli persona aktywna.
 - `snaf-flow` — orthogonal. Ma własny hook toggle. Skill dokumentuje zasady, hook wymusza je per-turn.
-- `snaf-commit`, `snaf-review`, `snaf-compress`, `snaf-help`, `snaf-context-threshold` — sloty komend. Każdy ma `commands/{name}.md` (slash command) i `skills/{name}/SKILL.md` (specyfikacja).
+- `snaf-commit`, `snaf-review`, `snaf-compress`, `snaf-help`, `snaf-context-threshold` — sloty komend. Każdy skill rejestruje slash `/snaf:{name}` automatycznie (spec: skill taking precedence over commands/). Argumenty przez `$ARGUMENTS` w SKILL.md, autocomplete hint przez `argument-hint` we frontmatterze.
 - `snaf-context-threshold` — jedyny skill modyfikujący konfigurację. Używa `bin/snaf-detect-settings` (wykrywa właściwy `settings.json` — projekt vs user-level) i zmienia zmienną `SNAF_CONTEXT_THRESHOLD`.
 
 ## Konwencje — co robić, czego nie
 
 **Co robić:**
 - Nowe hooki → `hooks/*.js`, wszystkie Node.js, bez zewnętrznych zależności (Claude Code dostarcza Node).
-- Nowe skille → `skills/{name}/SKILL.md` + `commands/{name}.md`.
+- Nowe skille → `skills/{name}/SKILL.md`. Slash `/snaf:{name}` rejestrowany automatycznie. Nie dodawać `commands/` — legacy format, skill i tak wygrywa.
 - Diacritics w regex → zawsze tolerować opcjonalność: `[ł|l]`, `[ą|a]`. Wzorce: `snaf-toggle.js:27-28`, `snaf-flow-toggle.js:31-32`.
 - Stan w `~/.claude/` → ukryte pliki prefiksowane `.snaf-`.
 

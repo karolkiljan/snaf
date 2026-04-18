@@ -3,7 +3,10 @@ name: snaf-review
 description: >
   Code review w stylu snaf: jednoliniowe komentarze, format L42: 🔴 bug: opis. fix.
   Użyj gdy robisz review kodu, PR, lub wywołujesz /snaf-review.
+argument-hint: Optional file or diff to review
 ---
+
+Cel review: $ARGUMENTS (opcjonalnie — konkretny plik/diff; jeśli puste, całość).
 
 ## Format
 

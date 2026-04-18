@@ -5,7 +5,10 @@ description: >
   pierwszy mały ruch, wykonuje po zgodzie, raport, propozycja następnego ruchu
   na podstawie rezultatu. Użyj gdy user włączył flow (`flow` / `/snaf-flow`),
   albo gdy mówi "krok po kroku bez planu", "iteracyjnie", "step by step od zera".
+argument-hint: on | off | cel do zrealizowania
 ---
+
+Args: $ARGUMENTS — `on` włączyć flow, `off` wyłączyć, inaczej traktować jako cel (włączyć flow i zacząć od pierwszego ruchu).
 
 ## Zadanie
 

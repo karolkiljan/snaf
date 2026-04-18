@@ -4,7 +4,10 @@ description: >
   Przepisuje plik markdown w stylu snaf — oszczędność tokenów ~40%.
   Zachowuje sens, usuwa wodę. Użyj gdy kompresujesz CLAUDE.md, README, dokumentację,
   lub wywołujesz /snaf-compress <plik>.
+argument-hint: Path to markdown file
 ---
+
+Target file: $ARGUMENTS
 
 ## Zadanie
 
