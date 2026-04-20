@@ -20,6 +20,8 @@ Plugin działa na dwóch niezależnych osiach:
 | `UserPromptSubmit` | `hooks/snaf-flow-toggle.js` | każdy prompt | Regex match na frazy flow (`flow`, `stop flow`, itp.) → zmienia `.snaf-flow-active`. Gdy flag aktywny, wstrzykuje per-turn reminder. |
 | `Stop` | `hooks/context_watch.js` | koniec tury modelu | Czyta tail transcriptu (128KB), sumuje `usage` tokenów. Gdy > threshold → ostrzeżenie przez stderr + exit 2. Cooldown 300s + delta 20k tokenów. |
 | `PreCompact` | `hooks/precompact.js` | przed /compact | Odczytuje `{cwd}/.claude/compact_notes.md` i wstrzykuje do summary. Kasuje plik po użyciu (notatki jednorazowe). |
+| `PreToolUse` | `hooks/version-sync-guard.js` | przed Edit/Write/MultiEdit | Gdy edytowany `package.json` lub `.claude-plugin/plugin.json`, porównuje ich wersje. Rozjazd → exit 2 z instrukcją `/snaf-bump`. Chroni wymóg synchronizacji. |
+| `PostToolUse` | `hooks/auto-test.js` | po Edit/Write/MultiEdit | Gdy zmieniony plik w `hooks/*.js` lub `test/*.js` w repo `snaf`, odpala `npm test`. Wynik (OK / tail padniętych) idzie do modelu przez stdout. Opt-out: `SNAF_AUTO_TEST=off`. |
 
 **Kolejność UserPromptSubmit:** oba hooki (`snaf-toggle`, `snaf-flow-toggle`) odpalają równolegle. Nie zależą od siebie — każdy ogarnia swój regex i plik stanu.
 
@@ -33,6 +35,8 @@ Plugin działa na dwóch niezależnych osiach:
 | `~/.claude/.snaf-active` | `snaf-toggle.js`, `activate.js` | statusline script | Runtime flag dla statusline badge `[SNAF]`. |
 | `~/.claude/.snaf-flow-active` | `snaf-flow-toggle.js` | `snaf-flow-toggle.js` | Per-turn reminder trigger dla trybu iteracyjnego. Istnienie pliku = ON. |
 | `~/.claude/.snaf-statusline-asked` | `activate.js` | `activate.js` | Marker że pluginowy prompt o statusline już wyleciał (nie nagaduj). |
+| `~/.claude/.snaf-context-watch-off` | user, `snaf-context-threshold` | `context_watch.js` | Marker opt-out samego context_watch (persona dalej działa). Istnienie = OFF. Powstał, bo env z settings.json nie dociera do child procesów hooków. |
+| `~/.claude/.snaf-context-threshold` | user, `snaf-context-threshold` | `context_watch.js` | Override wartości progu (jedna liczba). Precedencja: plik > env > default 85000. Nie wymaga restartu Claude Code. |
 | `{transcript_dir}/{session_id}.context_watch_ts` | `context_watch.js` | `context_watch.js` | Stan cooldownu (`timestamp:lastTokens`). Per-sesja. |
 | `{cwd}/.claude/compact_notes.md` | user/model | `precompact.js` | Notatki dla PreCompact. Jednorazowe — hook kasuje po użyciu. |
 
@@ -42,8 +46,10 @@ Plugin działa na dwóch niezależnych osiach:
 
 - `snaf` — persona. Jedyny skill z pełnym SKILL.md wstrzykiwanym przez `activate.js`. Inne skille korzystają z jej stylu, jeśli persona aktywna.
 - `snaf-flow` — orthogonal. Ma własny hook toggle. Skill dokumentuje zasady, hook wymusza je per-turn.
-- `snaf-commit`, `snaf-review`, `snaf-compress`, `snaf-help`, `snaf-context-threshold` — sloty komend. Każdy skill rejestruje slash `/snaf:{name}` automatycznie (spec: skill taking precedence over commands/). Argumenty przez `$ARGUMENTS` w SKILL.md, autocomplete hint przez `argument-hint` we frontmatterze.
+- `snaf-commit`, `snaf-review`, `snaf-compress`, `snaf-help`, `snaf-context-threshold`, `snaf-bump`, `snaf-release` — sloty komend. Każdy skill rejestruje slash `/snaf:{name}` automatycznie (spec: skill taking precedence over commands/). Argumenty przez `$ARGUMENTS` w SKILL.md, autocomplete hint przez `argument-hint` we frontmatterze.
 - `snaf-context-threshold` — jedyny skill modyfikujący konfigurację. Używa `bin/snaf-detect-settings` (wykrywa właściwy `settings.json` — projekt vs user-level) i zmienia zmienną `SNAF_CONTEXT_THRESHOLD`.
+- `snaf-bump` — atomowy bump wersji w `package.json` + `.claude-plugin/plugin.json`. Przyjmuje `patch|minor|major|X.Y.Z`. Egzekwuje wymóg z sekcji "Wersjonowanie" — wersje rozjechane → przerwa.
+- `snaf-release` — workflow release: `snaf-bump` → commit `feat: vX.Y.Z — opis` → tag `vX.Y.Z`. Nie push-uje automatycznie.
 
 ## Konwencje — co robić, czego nie
 
@@ -68,6 +74,8 @@ Plugin działa na dwóch niezależnych osiach:
 
 **Resume/compact → krótki reminder zamiast pełnego SKILL.md.** Przy resume skill już jest w pamięci modelu (kontekst persistuje). Przy compact PreCompact hook wstrzykuje notatki. Pełne SKILL.md tylko przy `startup` (`activate.js:41-55`).
 
+**File-based opt-out i threshold dla context_watch.** Claude Code nie propaguje `env` z `settings.json` do child procesów hooków (empiryczne: `process.env.SNAF_CONTEXT_THRESHOLD` i `SNAF_CONTEXT_WATCH` puste w hooku mimo ustawienia w settings). Dlatego `context_watch.js` czyta pliki w `~/.claude/`: `.snaf-context-watch-off` (marker opt-out, sprawdzany przed env) i `.snaf-context-threshold` (wartość progu, precedencja plik > env > default). Zaletę: zmiana działa od razu, bez restartu Claude Code — następny Stop hook już widzi nową wartość.
+
 **Statusline copy na każdym starcie.** Settings wskazują na stabilną ścieżkę `~/.claude/.snaf-statusline.sh`, ale sam skrypt jest kopiowany z wersjonowanego cache pluginu na każdym SessionStart. Update pluginu → update statusline bez zmiany settings.json (`activate.js:57-101`).
 
 ## Testy
@@ -81,12 +89,18 @@ Pokryte hooki:
 - `context_watch.js` — opt-out (env + mode), threshold, transcript parsing (JSONL, malformed lines, message.usage vs top-level), cooldown + delta logic (`test/context-watch.test.js`)
 - `precompact.js` — notes injection + one-shot deletion, empty file edge case (`test/precompact.test.js`)
 - `activate.js` — startup vs resume/compact branch, SKILL.md frontmatter strip, statusline copy, setup prompts (`test/activate.test.js`)
+- `version-sync-guard.js` — detekcja strzeżonych ścieżek, porównanie wersji, blok exit 2, edge case brakujących plików (`test/version-sync-guard.test.js`)
+- `auto-test.js` — matcher ścieżki (`hooks/*.js`, `test/*.js`), spawn `npm test`, propagacja wyniku, opt-out `SNAF_AUTO_TEST=off`, guard „nie repo snaf" (`test/auto-test.test.js`)
 
 **Konwencja testowa:** spawn hook jako podprocess z izolowanym `HOME`, karm JSONem na stdin, asertuj plik stanu + exit code + stdout/stderr. Dla hooków czytających env: w `spawnSync` **strippuj ambient `SNAF_*`** z `process.env` — shell użytkownika może mieć np. `SNAF_CONTEXT_WATCH=off` ustawione globalnie i zanieczyścić testy.
 
+## Agenci
+
+- `agents/hook-validator.md` — specjalistyczny reviewer hooków Claude Code. Uruchamiany po każdej zmianie w `hooks/*.js` albo na życzenie. Audytuje: stdin JSON contract, exit codes, timeout awareness, tail-only transcript parsing, diacritics w regex, lokalizację stanu, zero-dep, rozdzielność logiki persony/flow, pokrycie testami. Nie modyfikuje plików — tylko raport.
+
 ## Wersjonowanie
 
-`.claude-plugin/plugin.json` i `package.json` muszą być zsynchronizowane. Plugin.json to źródło prawdy dla Claude Code marketplace, package.json dla npm-style metadanych. Bumpować razem.
+`.claude-plugin/plugin.json` i `package.json` muszą być zsynchronizowane. Plugin.json to źródło prawdy dla Claude Code marketplace, package.json dla npm-style metadanych. Bumpować razem — najłatwiej przez `/snaf-bump` albo `/snaf-release`. Hook `version-sync-guard` blokuje edycję gdy wersje już rozjechane.
 
 ## Publikacja
 

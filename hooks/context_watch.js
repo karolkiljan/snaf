@@ -17,15 +17,22 @@ process.stdin.on('end', () => {
     process.exit(0);
   }
 
+  const claudeDir = path.join(os.homedir(), '.claude');
+
   // Skip when snaf is globally disabled — user opted out, don't nag.
   try {
     const mode = fs.readFileSync(
-      path.join(os.homedir(), '.claude', '.snaf-mode'), 'utf8'
+      path.join(claudeDir, '.snaf-mode'), 'utf8'
     ).trim().toLowerCase();
     if (mode === 'off') process.exit(0);
   } catch (e) {}
 
-  // Dedicated opt-out for context watch alone (keeps snaf persona on).
+  // File-based opt-out for context_watch alone (keeps snaf persona on).
+  // File takes precedence because env vars from settings.json don't reliably
+  // reach hook child processes — the file flag is the only dependable path.
+  if (fs.existsSync(path.join(claudeDir, '.snaf-context-watch-off'))) process.exit(0);
+
+  // Env fallback (kept for compatibility with shells that DO propagate env).
   if ((process.env.SNAF_CONTEXT_WATCH || '').toLowerCase() === 'off') process.exit(0);
 
   const sessionId = data.session_id || '';
@@ -34,7 +41,17 @@ process.stdin.on('end', () => {
     process.exit(0);
   }
 
-  const threshold = parseInt(process.env.SNAF_CONTEXT_THRESHOLD || '85000', 10);
+  // Threshold resolution: file > env > default. File override lets users
+  // change threshold without restarting Claude Code (env is loaded at startup).
+  let threshold = parseInt(process.env.SNAF_CONTEXT_THRESHOLD || '85000', 10);
+  try {
+    const fileThreshold = parseInt(
+      fs.readFileSync(path.join(claudeDir, '.snaf-context-threshold'), 'utf8').trim(),
+      10
+    );
+    if (Number.isFinite(fileThreshold) && fileThreshold > 0) threshold = fileThreshold;
+  } catch (e) {}
+
   const cooldown = parseInt(process.env.SNAF_CONTEXT_COOLDOWN || '300', 10);
   const delta = parseInt(process.env.SNAF_CONTEXT_DELTA || '20000', 10);
 

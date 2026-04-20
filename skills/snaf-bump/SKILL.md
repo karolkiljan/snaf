@@ -1,0 +1,59 @@
+---
+name: snaf-bump
+description: >
+  Atomowy bump wersji: synchronizuje package.json i .claude-plugin/plugin.json.
+  Użyj gdy chcesz podbić wersję pluginu, wywołujesz /snaf-bump, albo user mówi
+  "bump wersji", "patch/minor/major", "X.Y.Z".
+argument-hint: patch | minor | major | X.Y.Z (np. 1.10.0)
+disable-model-invocation: true
+---
+
+## Cel
+
+Jednym ruchem zmienić wersję w obu plikach źródłowych pluginu. CLAUDE.md:112-114 wymaga synchronizacji — ten skill jest egzekutorem tej reguły.
+
+## Wykonanie
+
+Argument: `$ARGUMENTS`
+
+### Krok 1 — odczyt obecnej wersji
+
+1. Read `package.json` — pole `.version`
+2. Read `.claude-plugin/plugin.json` — pole `.version`
+3. Jeśli różne → **zatrzymaj się**, zgłoś problem: `Wersje rozjechane: package.json=X, plugin.json=Y. Podaj docelową wersję albo napraw ręcznie`.
+
+### Krok 2 — wyznacz nową wersję
+
+Obecna wersja: `MAJOR.MINOR.PATCH`.
+
+- `patch` → `MAJOR.MINOR.(PATCH+1)`
+- `minor` → `MAJOR.(MINOR+1).0`
+- `major` → `(MAJOR+1).0.0`
+- `X.Y.Z` (format semver) → użyj wprost
+- pusty argument → pokaż obecną wersję + pomoc i wyjdź
+
+### Krok 3 — zapis
+
+1. Edit `package.json`: `"version": "STARA"` → `"version": "NOWA"`
+2. Edit `.claude-plugin/plugin.json`: analogicznie
+
+### Krok 4 — potwierdzenie
+
+Wypisz jednym zdaniem: `Wersja NOWA ustawiona. Dwa pliki zsynchronizowane. Czas na commit`.
+
+## Prawa
+
+- Nie commituj. Nie taguj. Nie push. To robi `snaf-release`.
+- Nie ruszaj innych pól niż `version`.
+- Nie modyfikuj `README.md`, `CHANGELOG.md`, testów — poza scope.
+- Walidacja semver: trzy liczby oddzielone kropkami. Nic więcej. Pre-release (`-rc1`) też dopuszczalny.
+
+## Przykłady
+
+```
+/snaf-bump patch      # 1.9.1 → 1.9.2
+/snaf-bump minor      # 1.9.1 → 1.10.0
+/snaf-bump major      # 1.9.1 → 2.0.0
+/snaf-bump 2.0.0-rc1  # wprost
+/snaf-bump            # pokaż obecną + pomoc
+```

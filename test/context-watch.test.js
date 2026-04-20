@@ -81,6 +81,27 @@ test('.snaf-mode=off disables watch entirely', () => {
   });
 });
 
+test('.snaf-context-watch-off file disables watch (keeps persona on)', () => {
+  withTempEnv((home, sessDir) => {
+    fs.mkdirSync(path.join(home, '.claude'), { recursive: true });
+    fs.closeSync(fs.openSync(path.join(home, '.claude', '.snaf-context-watch-off'), 'w'));
+    const transcript = writeTranscript(sessDir, [usageLine(200000)]);
+    const r = runHook(home, { session_id: 's1', transcript_path: transcript });
+    assert.equal(r.status, 0);
+    assert.equal(r.stderr, '');
+  });
+});
+
+test('.snaf-context-watch-off empty file is enough (marker semantics)', () => {
+  withTempEnv((home, sessDir) => {
+    fs.mkdirSync(path.join(home, '.claude'), { recursive: true });
+    fs.writeFileSync(path.join(home, '.claude', '.snaf-context-watch-off'), '');
+    const transcript = writeTranscript(sessDir, [usageLine(200000)]);
+    const r = runHook(home, { session_id: 's1', transcript_path: transcript });
+    assert.equal(r.status, 0);
+  });
+});
+
 // --- threshold behavior ---
 
 test('tokens below default threshold (85000): no warning, exit 0', () => {
@@ -112,6 +133,66 @@ test('tokens exactly at threshold: no warning (strict >)', () => {
       { session_id: 's1', transcript_path: transcript },
       { SNAF_CONTEXT_THRESHOLD: '40000' });
     assert.equal(r.status, 0);
+  });
+});
+
+test('.snaf-context-threshold file overrides default threshold', () => {
+  withTempEnv((home, sessDir) => {
+    fs.mkdirSync(path.join(home, '.claude'), { recursive: true });
+    fs.writeFileSync(path.join(home, '.claude', '.snaf-context-threshold'), '150000');
+    // 100k would fire at default (85000) but NOT at file-override (150000).
+    const transcript = writeTranscript(sessDir, [usageLine(100000)]);
+    const r = runHook(home, { session_id: 's1', transcript_path: transcript });
+    assert.equal(r.status, 0);
+    assert.equal(r.stderr, '');
+  });
+});
+
+test('.snaf-context-threshold file beats env SNAF_CONTEXT_THRESHOLD', () => {
+  withTempEnv((home, sessDir) => {
+    fs.mkdirSync(path.join(home, '.claude'), { recursive: true });
+    fs.writeFileSync(path.join(home, '.claude', '.snaf-context-threshold'), '200000');
+    // Env says 40k (would fire at 50k), but file says 200k (would NOT fire at 50k).
+    const transcript = writeTranscript(sessDir, [usageLine(50000)]);
+    const r = runHook(home,
+      { session_id: 's1', transcript_path: transcript },
+      { SNAF_CONTEXT_THRESHOLD: '40000' });
+    assert.equal(r.status, 0);
+  });
+});
+
+test('.snaf-context-threshold file with whitespace is trimmed', () => {
+  withTempEnv((home, sessDir) => {
+    fs.mkdirSync(path.join(home, '.claude'), { recursive: true });
+    fs.writeFileSync(path.join(home, '.claude', '.snaf-context-threshold'), '\n  40000  \n');
+    const transcript = writeTranscript(sessDir, [usageLine(50000)]);
+    const r = runHook(home, { session_id: 's1', transcript_path: transcript });
+    assert.equal(r.status, 2);
+    assert.match(r.stderr, /40000/);
+  });
+});
+
+test('.snaf-context-threshold garbage content falls back to env/default', () => {
+  withTempEnv((home, sessDir) => {
+    fs.mkdirSync(path.join(home, '.claude'), { recursive: true });
+    fs.writeFileSync(path.join(home, '.claude', '.snaf-context-threshold'), 'not a number');
+    const transcript = writeTranscript(sessDir, [usageLine(90000)]);
+    const r = runHook(home, { session_id: 's1', transcript_path: transcript });
+    // Default threshold (85000) wins → 90k > 85k → fires.
+    assert.equal(r.status, 2);
+    assert.match(r.stderr, /85000/);
+  });
+});
+
+test('.snaf-context-threshold zero or negative is rejected', () => {
+  withTempEnv((home, sessDir) => {
+    fs.mkdirSync(path.join(home, '.claude'), { recursive: true });
+    fs.writeFileSync(path.join(home, '.claude', '.snaf-context-threshold'), '0');
+    const transcript = writeTranscript(sessDir, [usageLine(90000)]);
+    const r = runHook(home, { session_id: 's1', transcript_path: transcript });
+    // 0 rejected → fallback to default 85000 → 90k > 85k → fires.
+    assert.equal(r.status, 2);
+    assert.match(r.stderr, /85000/);
   });
 });
 
