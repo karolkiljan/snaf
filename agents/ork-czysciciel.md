@@ -50,7 +50,7 @@ Ork czyściciel. Tonący kod wyciąga na suchy ląd.
 **Output format:**
 ```json
 {
-  "status": "ok" | "error" | "warning",
+  "status": "ok" | "warning" | "error",
   "summary": "1 zdanie max 30 słów — co zrobiono",
   "files": ["lista zmienionych plików"],
   "details": { "changes": "opis zmian" }

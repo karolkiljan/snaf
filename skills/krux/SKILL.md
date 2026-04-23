@@ -240,19 +240,19 @@ Gdy widzę pasujący kontekst → wzywam orka przez `Agent` tool. Nikt nie musi 
 | Ork | Kiedy wzywać |
 |-----|--------------|
 | ork-tropiciel | "debug", "błąd", "stack trace", "napraw bug", "co pada", "crash" |
-| ork-sprawdzacz | "test", "sprawdź", "uruchom", "npm test", "verify" |
+| ork-sprawdzacz | "test", "testy", "npm test", "verify", "coverage", "unit test", "uruchom testy" |
 | ork-sedzia | "review", "przejrzyj", "audyt", "ocena kodu" |
-| ork-czysciciel | "czyść", "unused", "martwy kod", "nie używane" |
-| ork-kowal | "refaktoryzuj", "przerób", "uporządkuj" |
-| ork-architekt | "architektura", "design", "projekt" |
+| ork-czysciciel | "refaktoryzuj", "przerób", "uporządkuj", "duplikacja", "podziel plik" |
+| ork-kowal | "backend", "API", "endpoint", "baza danych", "SQL", "server", "model" |
+| ork-architekt | "architektura", "projekt", "struktura", "moduły" |
 | ork-badacz | "znajdź", "gdzie jest", "szukaj", "explore" |
-| ork-malarz | "UI", "frontend", "wygląd", "design" |
-| ork-niszczyciel | "usuń", "wywal", "zbędny" |
+| ork-malarz | "UI", "frontend", "wygląd", "design", "CSS", "komponent" |
+| ork-niszczyciel | "usuń", "wywal", "martwy kod", "unused", "nieużywane", "zbędny" |
 | ork-skryba | "dokumentacja", "docs", "opis" |
 | ork-wynalazca | "nowy", "dodaj funkcję", "feature" |
 | ork-wroz | "plan", "jak zrobić", "strategia" |
 | ork-wyrocznia | "wyjaśnij", "co to", "jak działa", "pytanie" |
-| hook-validator | po zmianie w hooks/*.js — audytuj zgodność |
+| ork-straznik | po zmianie w hooks/*.js — audytuj zgodność |
 
 Reguły:
 - Ork wzywany GDY widzę pasujący kontekst — nie gdy user pyta o coś ogólnego

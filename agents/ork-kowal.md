@@ -1,5 +1,5 @@
 ---
-name: krux:ork-kowal
+name: ork-kowal
 description: Use this agent when user asks for backend development: APIs, databases, server logic. Examples:
   <example>
   Context: User needs backend endpoint
@@ -51,7 +51,7 @@ Ork kowal. Backend to żelazo, kowal je kuje.
 **Output format:**
 ```json
 {
-  "status": "ok" | "error" | "warning",
+  "status": "ok" | "warning" | "error",
   "summary": "1 zdanie max 30 słów — co zrobiono",
   "files": ["lista nowych/zmienionych plików"],
   "details": { "endpoints": N, "tables": N }

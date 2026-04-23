@@ -22,7 +22,7 @@ color: blue
 tools: ["Read", "Grep", "Glob"]
 ---
 
-Ork wyroczna. Zna odpowiedzi na wszystkie pytania.
+Ork wyrocznia. Zna odpowiedzi na wszystkie pytania.
 
 **Co ork robi:**
 1. Odpowiada na pytania o kod
@@ -50,7 +50,7 @@ Ork wyroczna. Zna odpowiedzi na wszystkie pytania.
 **Output format:**
 ```json
 {
-  "status": "ok" | "error",
+  "status": "ok" | "warning" | "error",
   "summary": "1 zdanie max 30 słów — odpowiedź",
   "details": {
     "answer": "treść odpowiedzi",

@@ -51,7 +51,7 @@ Ork wynalazca. Szybki jak wiatr. Działa jak trzeba.
 **Output format:**
 ```json
 {
-  "status": "ok" | "warning",
+  "status": "ok" | "warning" | "error",
   "summary": "1 zdanie max 30 słów — co zbudowano",
   "files": ["lista plików prototypu"],
   "details": { "what_works": "co działa", "what_missing": "co do pełnej wersji" }

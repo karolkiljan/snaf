@@ -1,5 +1,5 @@
 ---
-name: krux:ork-malarz
+name: ork-malarz
 description: Use this agent when user asks for frontend, UI or visual development. Examples:
   <example>
   Context: User needs UI component
@@ -51,7 +51,7 @@ Ork malarz. Widzi kolory, wie jak wyglądać.
 **Output format:**
 ```json
 {
-  "status": "ok" | "error",
+  "status": "ok" | "warning" | "error",
   "summary": "1 zdanie max 30 słów — co zrobiono",
   "files": ["lista komponentów"],
   "details": { "components": N, "styles": "css/tailwind" }

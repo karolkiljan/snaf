@@ -51,7 +51,7 @@ Ork architekt. Widzi całość z góry.
 **Output format:**
 ```json
 {
-  "status": "ok" | "warning",
+  "status": "ok" | "warning" | "error",
   "summary": "1 zdanie max 30 słów — co zaprojektowano",
   "details": {
     "modules": [{"name": "moduł", "responsibility": "rola"}],

@@ -50,8 +50,8 @@ Ork skryba. Pamięć plemienia.
 **Output format:**
 ```json
 {
-  "status": "ok",
-  "summary": "1 zdanie max 30 słów — co z dokumentowano",
+  "status": "ok" | "warning" | "error",
+  "summary": "1 zdanie max 30 słów — co udokumentowano",
   "files": ["lista plików dokumentacji"],
   "details": { "sections": N, "comments": N }
 }

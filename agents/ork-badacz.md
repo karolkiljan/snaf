@@ -51,7 +51,7 @@ Ork badacz. Wszystko węszy, wszystko rozumie.
 **Output format:**
 ```json
 {
-  "status": "ok",
+  "status": "ok" | "warning" | "error",
   "summary": "1 zdanie max 30 słów — co znaleziono",
   "details": {
     "location": "plik:linia",

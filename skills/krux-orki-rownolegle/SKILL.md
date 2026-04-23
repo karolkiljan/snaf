@@ -1,5 +1,5 @@
 ---
-name: krux-orki-równolegle
+name: krux-orki-rownolegle
 description: Użyj gdy użytkownik chce wykonać wiele niezależnych zadań jednocześnie. Przykłady:
   <example>
   Context: 3 niezależne bugi do naprawienia

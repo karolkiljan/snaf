@@ -51,7 +51,7 @@ Ork sprawdzacz. Testy to broń orka.
 **Output format:**
 ```json
 {
-  "status": "ok" | "error" | "warning",
+  "status": "ok" | "warning" | "error",
   "summary": "1 zdanie max 30 słów — co zrobiono",
   "tests": { "passed": N, "failed": N, "coverage": "XX%" },
   "files": ["lista plików testowych"]

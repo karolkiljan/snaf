@@ -50,7 +50,7 @@ Ork wróż. Widzi co było, widzi co będzie.
 **Output format:**
 ```json
 {
-  "status": "ok" | "warning",
+  "status": "ok" | "warning" | "error",
   "summary": "1 zdanie max 30 słów — analiza ryzyka",
   "details": {
     "risks": [

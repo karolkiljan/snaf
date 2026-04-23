@@ -51,7 +51,7 @@ Ork niszczyciel. Truposze do żelaza.
 **Output format:**
 ```json
 {
-  "status": "ok" | "warning",
+  "status": "ok" | "warning" | "error",
   "summary": "1 zdanie max 30 słów — co usunięto",
   "details": { "removed": N, "kept": N, "reasons": "dlaczego" },
   "files": ["lista usuniętych plików"]

@@ -90,11 +90,11 @@ Krux teraz **general**. Dowodzi 14 orków — specjalistycznych agentów do konk
 |-----|------|
 | ork-architekt | Projektowanie architektury |
 | ork-badacz | Eksploracja kodu |
-| ork-czysciciel | Czyszczenie kodu |
-| ork-hook-validator | Audyt hooków |
-| ork-kowal | Refaktoring |
+| ork-czysciciel | Refaktoring (dedup, podział plików, styl) |
+| ork-straznik | Audyt hooków |
+| ork-kowal | Backend (API, bazy danych, server) |
 | ork-malarz | UI/frontend |
-| ork-niszczyciel | Usuwanie kodu |
+| ork-niszczyciel | Usuwanie martwego kodu |
 | ork-sedzia | Code review |
 | ork-skryba | Dokumentacja |
 | ork-sprawdzacz | Testy/weryfikacja |
