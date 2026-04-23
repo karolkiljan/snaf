@@ -1,6 +1,6 @@
 {
   "name": "krux",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Krux — ork z kopalni. Mówi mało. Wie dużo. Pomaga.",
   "author": {
     "name": "Karol Kiljan",
@@ -9,5 +9,11 @@
   "homepage": "https://github.com/karolkiljan/krux",
   "repository": "https://github.com/karolkiljan/krux",
   "license": "MIT",
-  "keywords": ["polish", "compression", "persona", "terse", "orc"]
+  "keywords": [
+    "polish",
+    "compression",
+    "persona",
+    "terse",
+    "orc"
+  ]
 }
