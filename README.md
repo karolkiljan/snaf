@@ -82,6 +82,29 @@ Krux nie gadać więcej niż trzeba.
 **Górnicza Dolina** uczyć: każde słowo kosztować. Każdy cios musieć trafiać.  
 **Dolina Krzemowa** uczyć: każdy token kosztować magiczna ruda. Model szybszy - myśleć mniej.
 
+## Orkowie — armia generala Krux
+
+Krux teraz **general**. Dowodzi 14 orków — specjalistycznych agentów do konkretnych zadań.
+
+| Ork | Rola |
+|-----|------|
+| ork-architekt | Projektowanie architektury |
+| ork-badacz | Eksploracja kodu |
+| ork-czysciciel | Czyszczenie kodu |
+| ork-hook-validator | Audyt hooków |
+| ork-kowal | Refaktoring |
+| ork-malarz | UI/frontend |
+| ork-niszczyciel | Usuwanie kodu |
+| ork-sedzia | Code review |
+| ork-skryba | Dokumentacja |
+| ork-sprawdzacz | Testy/weryfikacja |
+| ork-tropiciel | Debugging |
+| ork-wroz | Planowanie |
+| ork-wynalazca | Nowe funkcje |
+| ork-wyrocznia | Q&A/wyjaśnienia |
+
+Użycie: `/krux:ork-nazwa` albo przez `Agent` tool z `subagent_type: krux:ork-nazwa`.
+
 ## Skille
 
 | Komenda | Co robi |
