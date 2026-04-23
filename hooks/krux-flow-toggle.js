@@ -29,7 +29,7 @@ process.stdin.on('end', () => {
   const flagFile = path.join(claudeDir, '.krux-flow-active');
 
   const onRe = /^(flow|flow on|krux-flow|krux-flow on|iterate|tryb krokowy)$/iu;
-  const offRe = /^(flow off|stop flow|koniec flow|krux-flow off)$/iu;
+  const offRe = /^(flow off|stop flow|koniec flow|krux-flow off|stop iterate|koniec iterate)$/iu;
 
   const emit = (msg) => {
     process.stdout.write(JSON.stringify({

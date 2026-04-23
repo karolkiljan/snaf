@@ -16,9 +16,13 @@ function withTempHome(fn) {
   try { fn(home); } finally { fs.rmSync(home, { recursive: true, force: true }); }
 }
 
+function buildPayload(prompt) {
+  return JSON.stringify({ prompt });
+}
+
 function runHook(home, prompt) {
   const result = spawnSync('node', [HOOK], {
-    input: JSON.stringify({ prompt }),
+    input: buildPayload(prompt),
     env: { ...process.env, HOME: home, USERPROFILE: home },
     encoding: 'utf8',
     timeout: 5000,
