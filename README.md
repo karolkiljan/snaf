@@ -111,12 +111,13 @@ Każdy ork zwraca standardowy JSON z polami: `status` (ok/warning/error), `summa
 
 ### Wielu orków na raz
 
-Dwa skille dla zaawansowanych workflow:
+Krux sam ocenia sytuację i dobiera formację — nie musisz nic włączać:
 
-- `/krux-orki-lancuch` — sekwencja orków gdzie wynik pierwszego = input drugiego.  
-  Przykład: ork-badacz znajdzie → ork-tropiciel naprawi → ork-sprawdzacz przetestuje.
-- `/krux-orki-rownolegle` — wielu orków jednocześnie na niezależne zadania.  
-  Przykład: 3 bugi w różnych plikach → 3 ork-tropiciele równolegle.
+- **Solo** — wąskie zadanie, jedna domena → jeden ork.
+- **Łańcuch** — output A = input B (np. `zrozum → napraw → sprawdź`) → badacz → tropiciel → sprawdzacz.
+- **Równolegle** — 2+ niezależne zadania (różne pliki, bez wspólnego stanu) → wielu orków jednocześnie.
+
+Decyzja z kontekstu wiadomości. Anty-formacje: ten sam plik dla dwóch orków (konflikt edycji), łańcuch bez zależności (zbędna sekwencja), ork do trywialnego zadania (marnotrawstwo).
 
 ## Skille
 
