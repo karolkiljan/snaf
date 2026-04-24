@@ -7,7 +7,7 @@ description: >
   tail-only odczyt transcriptu, diacritics w regex.
   Też na żądanie: "sprawdź hook", "audytuj hooks", "review hook XYZ".
 model: inherit
-color: magenta
+color: purple
 tools: ["Read", "Grep", "Glob", "Bash"]
 ---
 

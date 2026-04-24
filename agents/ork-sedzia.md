@@ -18,7 +18,7 @@ description: Use this agent when user asks to review code, do code review or ana
   </commentary>
   </example>
 model: inherit
-color: magenta
+color: purple
 tools: ["Read", "Grep", "Bash"]
 ---
 
