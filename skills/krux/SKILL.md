@@ -237,6 +237,8 @@ Triggery działają tylko w języku polskim. `be concise` po angielsku nie włą
 
 Gdy widzę pasujący kontekst → wzywam orka przez `Agent` tool. Nikt nie musi prosić.
 
+**Jedyne źródło prawdy o triggerach:** ta tabela. Pliki `agents/ork-*.md` opisują CO ork robi — nie KIEDY go wzywać.
+
 | Ork | Kiedy wzywać |
 |-----|--------------|
 | ork-tropiciel | "debug", "błąd", "stack trace", "napraw bug", "co pada", "crash" |
@@ -245,14 +247,16 @@ Gdy widzę pasujący kontekst → wzywam orka przez `Agent` tool. Nikt nie musi 
 | ork-czysciciel | "refaktoryzuj", "przerób", "uporządkuj", "duplikacja", "podziel plik" |
 | ork-kowal | "backend", "API", "endpoint", "baza danych", "SQL", "server", "model" |
 | ork-architekt | "architektura", "projekt", "struktura", "moduły" |
-| ork-badacz | "znajdź", "gdzie jest", "szukaj", "explore" |
+| ork-badacz | "znajdź", "gdzie jest", "szukaj", "explore" — lokalizacja i eksploracja kodu |
 | ork-malarz | "UI", "frontend", "wygląd", "design", "CSS", "komponent" |
 | ork-niszczyciel | "usuń", "wywal", "martwy kod", "unused", "nieużywane", "zbędny" |
 | ork-skryba | "dokumentacja", "docs", "opis" |
-| ork-wynalazca | "nowy", "dodaj funkcję", "feature" |
-| ork-wroz | "plan", "jak zrobić", "strategia" |
-| ork-wyrocznia | "wyjaśnij", "co to", "jak działa", "pytanie" |
+| ork-wynalazca | "nowy", "dodaj funkcję", "feature", "prototype", "MVP" |
+| ork-wroz | "ryzyko", "plan", "jak zrobić", "strategia", "co jeśli" |
+| ork-wyrocznia | "wyjaśnij", "co to", "jak działa" — koncepcyjne pytania, nie eksploracja kodu |
 | ork-straznik | po zmianie w hooks/*.js — audytuj zgodność |
+
+Rozróżnienie badacz/wyrocznia: `"gdzie jest funkcja X"` → badacz. `"jak działa mechanizm Y"` (koncepcja) → wyrocznia.
 
 Reguły:
 - Ork wzywany GDY widzę pasujący kontekst — nie gdy user pyta o coś ogólnego
@@ -302,8 +306,9 @@ Mapowanie orków (default, można łamać gdy kontekst mówi inaczej):
 Powód: subagent zawsze startować zimny — cache miss zapłacony przez spawn. Sonnet zamiast Opus = tańszy token, szybszy output, ten sam cold start. Default Opus dla grep = przepalanie kasy.
 
 **Parsing raportu od orka:**
-- Każdy ork zwraca JSON z kluczami: `status`, `summary`, `details`, `files`, `tests`, `verdict`
-- Do usera: biorę `summary` z JSON — to 1 zdanie max 30 słów
-- `status`: `ok` = sukces, `error` = błąd, `warning` = ostrzeżenie
-- Reszta (details, files, tests) = dla mnie, nie dla usera
-- Jeśli JSON parse error → oddaję summary jako plain text
+- Każdy ork zwraca TYLKO JSON — bez tekstu przed ani po (instrukcja wbudowana w każdy plik orka)
+- Schemat: `{ status, summary, details, files?, tests?, verdict? }`
+- Do usera: biorę `summary` — 1 zdanie max 30 słów
+- `status`: `ok` = sukces, `warning` = ostrzeżenie, `error` = błąd
+- Reszta pól = dla mnie, nie dla usera
+- Jeśli JSON parse error → `summary` = cały output orka jako plain text

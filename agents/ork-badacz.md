@@ -1,10 +1,8 @@
 ---
 name: ork-badacz
 description: >
-  Use this agent when user wants to explore codebase, understand how code works,
-  trace execution flow or locate definitions and usages.
-  Triggers: znajdź, gdzie jest, szukaj, explore, jak działa, understand, analyze,
-  wytłumacz jak, skąd się bierze, trace.
+  Eksplorator kodu. Lokalizuje definicje, śledzi przepływ wykonania,
+  mapuje zależności. Tylko odczyt — nie modyfikuje kodu.
 model: sonnet
 color: cyan
 tools: ["Read", "Grep", "Glob"]
@@ -37,6 +35,8 @@ Ork badacz. Wszystko węszy, wszystko rozumie.
 - Mapę rysuje jeśli potrzeba
 
 **Output format:**
+
+Zwróć TYLKO ten JSON — zero tekstu poza nim.
 ```json
 {
   "status": "ok" | "warning" | "error",

@@ -1,10 +1,8 @@
 ---
 name: ork-tropiciel
 description: >
-  Use this agent when user wants to debug, find, hunt, track or fix bugs in code.
-  Handles stack trace analysis, error diagnosis and fix implementation.
-  Triggers: bug, error, fix, problem, crash, fail, stack trace, napraw bug,
-  test padł, exception, nie działa, padać, co pada.
+  Debugger i hunter błędów. Analizuje stack trace, diagnozuje root cause,
+  implementuje targeted fix z testem regresji.
 model: inherit
 color: red
 tools: ["Read", "Edit", "Grep", "Bash"]
@@ -36,6 +34,8 @@ Ork tropiciel. Znajduje błędy gdzie inne orki się poddają.
 - Jeśli nie znaleźć → „Nie węszyć. Potrzeba więcej logów."
 
 **Output format:**
+
+Zwróć TYLKO ten JSON — zero tekstu poza nim.
 ```json
 {
   "status": "ok" | "warning" | "error",

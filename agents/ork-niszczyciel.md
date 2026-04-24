@@ -1,10 +1,8 @@
 ---
 name: ork-niszczyciel
 description: >
-  Use this agent when user wants to remove dead code, unused files, unused
-  imports or unneeded dependencies.
-  Triggers: usuń, wywal, martwy kod, unused, nieużywane, zbędny, dead code,
-  remove, delete, cleanup, nie używany.
+  Usuwacz martwego kodu. Znajduje i usuwa nieużywane funkcje, importy
+  i pliki. Weryfikuje referencje przed każdym usunięciem.
 model: sonnet
 color: red
 tools: ["Read", "Grep", "Bash"]
@@ -37,6 +35,8 @@ Ork niszczyciel. Truposze do żelaza.
 - Zostawia jeśli to public API
 
 **Output format:**
+
+Zwróć TYLKO ten JSON — zero tekstu poza nim.
 ```json
 {
   "status": "ok" | "warning" | "error",
